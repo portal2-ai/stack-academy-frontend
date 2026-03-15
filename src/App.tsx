@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useParams } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'motion/react';
-import { Play, ArrowRight, Search, Menu, ChevronDown, X, Shield, Database, Cpu, PenTool, Twitter, Instagram, Dribbble, Github, GraduationCap, Users, BookOpen, Linkedin, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import { Play, ArrowRight, Search, Menu, ChevronDown, X, Shield, Database, Cpu, PenTool, Twitter, Instagram, Dribbble, Github, GraduationCap, Users, BookOpen, Linkedin, ChevronLeft, ChevronRight, ArrowLeft, Aperture, Command, Layers, Edit2, Feather, Plus } from 'lucide-react';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -79,7 +79,7 @@ const Navbar = ({ onOpenModal }: { onOpenModal: () => void }) => {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 bg-[#FDFDFD]/80 backdrop-blur-md border-b border-black/5"
+      className="fixed top-0 left-0 right-0 z-[100] bg-[#FDFDFD]/80 backdrop-blur-md border-b border-black/5"
     >
       <div className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto w-full">
         <Link to="/" className="flex items-center gap-2">
@@ -209,92 +209,145 @@ const Navbar = ({ onOpenModal }: { onOpenModal: () => void }) => {
   );
 };
 
-const Hero = () => {
-  const { scrollY } = useScroll();
-  
-  // Parallax drop down into Showcase section
-  const yOffset = 800;
-  const xOffset = 300;
-  const scrollRange = [0, 600];
+const HERO_IMAGES = [
+  { id: 'img0', src: IMAGES[0], z: 50, fan: { x: 0, y: 0, r: 0 }, showcase: { x: -60, y: -60, r: -8 } },
+  { id: 'img1', src: IMAGES[1], z: 40, fan: { x: -140, y: 15, r: -8 }, showcase: { x: -30, y: -30, r: -4 } },
+  { id: 'img2', src: IMAGES[2], z: 30, fan: { x: 140, y: 15, r: 8 }, showcase: { x: 0, y: 0, r: 0 } },
+  { id: 'img3', src: IMAGES[3], z: 20, fan: { x: -280, y: 45, r: -16 }, showcase: { x: 30, y: 30, r: 4 } },
+  { id: 'img4', src: IMAGES[4], z: 10, fan: { x: 280, y: 45, r: 16 }, showcase: { x: 60, y: 60, r: 8 } },
+];
 
-  const y1 = useTransform(scrollY, scrollRange, [0, yOffset - 100]);
-  const x1 = useTransform(scrollY, scrollRange, [0, xOffset - 150]);
-  const r1 = useTransform(scrollY, scrollRange, [-24, -12]);
+const Hero = ({ isScrolled }: { isScrolled?: boolean }) => {
+  const [stage, setStage] = useState(0);
 
-  const y2 = useTransform(scrollY, scrollRange, [0, yOffset + 50]);
-  const x2 = useTransform(scrollY, scrollRange, [0, xOffset + 100]);
-  const r2 = useTransform(scrollY, scrollRange, [-12, 8]);
-
-  const y3 = useTransform(scrollY, scrollRange, [0, yOffset - 50]);
-  const x3 = useTransform(scrollY, scrollRange, [0, xOffset]);
-  const r3 = useTransform(scrollY, scrollRange, [0, 0]);
-
-  const y4 = useTransform(scrollY, scrollRange, [0, yOffset + 100]);
-  const x4 = useTransform(scrollY, scrollRange, [0, xOffset - 100]);
-  const r4 = useTransform(scrollY, scrollRange, [12, -6]);
-
-  const y5 = useTransform(scrollY, scrollRange, [0, yOffset]);
-  const x5 = useTransform(scrollY, scrollRange, [0, xOffset + 150]);
-  const r5 = useTransform(scrollY, scrollRange, [24, 15]);
-
-  const scale = useTransform(scrollY, [0, 500], [1, 1.1]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
-
-  const transforms = [
-    { y: y1, x: x1, r: r1 },
-    { y: y2, x: x2, r: r2 },
-    { y: y3, x: x3, r: r3 },
-    { y: y4, x: x4, r: r4 },
-    { y: y5, x: x5, r: r5 },
-  ];
+  useEffect(() => {
+    const t1 = setTimeout(() => setStage(1), 100); // Text 1
+    const t2 = setTimeout(() => setStage(2), 800); // Image 1 flies in
+    const t3 = setTimeout(() => setStage(3), 1800); // Text 2, stack images
+    const t4 = setTimeout(() => setStage(4), 2600); // Fan out
+    const t5 = setTimeout(() => setStage(5), 3400); // Chat bubbles & buttons
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); };
+  }, []);
 
   return (
-    <section className="pt-40 pb-20 px-6 flex flex-col items-center text-center min-h-screen relative">
-      <motion.div style={{ scale, opacity }} className="relative z-10">
-        <FadeIn>
-          <h1 className="text-5xl md:text-8xl font-medium tracking-tighter max-w-5xl mx-auto leading-[1.1]">
-            Gələcəyin IT Bacarıqları Buradan Başlayır
-          </h1>
-        </FadeIn>
-      </motion.div>
-
-      <div className="relative h-[400px] w-full max-w-3xl mx-auto mt-20 flex justify-center items-center z-20 pointer-events-none">
-        {[...Array(5)].map((_, i) => (
-          <motion.div
-            key={i}
-            style={{ y: transforms[i].y, x: transforms[i].x, rotate: transforms[i].r }}
-            className="absolute origin-bottom pointer-events-auto"
+    <section className="pt-40 pb-20 px-6 flex flex-col items-center text-center min-h-screen relative overflow-hidden bg-[#FAFAFA]">
+      <div className="relative z-10 h-32 md:h-48 flex flex-col items-center justify-center">
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-medium tracking-tighter max-w-5xl mx-auto leading-[1.1] text-gray-900">
+          <motion.span
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: stage >= 1 ? 1 : 0, y: stage >= 1 ? 0 : 20 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="inline-block"
           >
-            <motion.div
-              initial={{ opacity: 0, y: 200, rotate: (i - 2) * 20, scale: 0.5 }}
-              animate={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}
-              transition={{ duration: 1.2, delay: 0.1 + i * 0.1, type: "spring", bounce: 0.3 }}
-              className="w-48 h-64 md:w-56 md:h-72 rounded-2xl shadow-2xl overflow-hidden border-4 border-white"
-            >
-              <img src={IMAGES[i]} alt="Art" className="w-full h-full object-cover" />
-            </motion.div>
-          </motion.div>
-        ))}
+            Gələcəyin IT Bacarıqları
+          </motion.span>
+          <br />
+          <motion.span
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: stage >= 3 ? 1 : 0, y: stage >= 3 ? 0 : 20 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="inline-block"
+          >
+            Buradan Başlayır.
+          </motion.span>
+        </h1>
       </div>
 
-      <FadeIn delay={0.8} className="mt-12 max-w-md mx-auto relative z-10">
+      <div className="relative h-[350px] md:h-[450px] w-full max-w-5xl mx-auto mt-10 flex justify-center items-center z-20 pointer-events-none">
+          {!isScrolled && HERO_IMAGES.map((img, i) => {
+            let isVisible = false;
+            let isStacked = false;
+            let isFanned = false;
+
+            if (i === 0) {
+              if (stage >= 2) isVisible = true;
+              if (stage >= 3) isStacked = true;
+              if (stage >= 4) isFanned = true;
+            } else {
+              if (stage >= 3) {
+                isVisible = true;
+                isStacked = true;
+              }
+              if (stage >= 4) isFanned = true;
+            }
+
+            return (
+              <motion.div
+                key={img.id}
+                layoutId={img.id}
+                initial={{ opacity: 0, y: 400, x: 0, rotate: 30, scale: 0.8 }}
+                animate={{ 
+                  opacity: isVisible ? 1 : 0, 
+                  y: isFanned ? img.fan.y : (isStacked ? 0 : (isVisible ? 0 : 400)), 
+                  x: isFanned ? img.fan.x : 0, 
+                  rotate: isFanned ? img.fan.r : (isStacked ? (i % 2 === 0 ? -2 : 2) : (isVisible ? -5 : 30)), 
+                  scale: isVisible ? 1 : 0.8 
+                }}
+                transition={{ 
+                  type: "spring", 
+                  damping: 25, 
+                  stiffness: 80,
+                  mass: 1
+                }}
+                className="absolute origin-bottom pointer-events-auto"
+                style={{ zIndex: img.z }}
+              >
+                <div className="w-48 h-48 md:w-64 md:h-64 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] overflow-hidden border-4 border-white bg-gray-100">
+                  <img src={img.src} alt="Art" className="w-full h-full object-cover" />
+                </div>
+              </motion.div>
+            );
+          })}
+
+        {/* Chat Bubbles */}
+          {!isScrolled && (
+            <>
+              <motion.div
+                layoutId="bubble1"
+                initial={{ opacity: 0, scale: 0, y: 20 }}
+                animate={{ opacity: stage >= 5 ? 1 : 0, scale: stage >= 5 ? 1 : 0, y: stage >= 5 ? 0 : 20 }}
+                transition={{ type: "spring", bounce: 0.5, delay: 0.1 }}
+                className="absolute z-50 top-10 left-[15%] md:left-[25%] -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white px-4 py-2 rounded-2xl rounded-bl-sm font-medium text-sm shadow-xl"
+              >
+                @kibertəhlükəsizlik
+              </motion.div>
+              
+              <motion.div
+                layoutId="bubble2"
+                initial={{ opacity: 0, scale: 0, y: 20 }}
+                animate={{ opacity: stage >= 5 ? 1 : 0, scale: stage >= 5 ? 1 : 0, y: stage >= 5 ? 0 : 20 }}
+                transition={{ type: "spring", bounce: 0.5, delay: 0.3 }}
+                className="absolute z-50 top-20 right-[15%] md:right-[25%] translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-white px-4 py-2 rounded-2xl rounded-br-sm font-medium text-sm shadow-xl"
+              >
+                @proqramlaşdırma
+              </motion.div>
+            </>
+          )}
+      </div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: stage >= 5 ? 1 : 0, y: stage >= 5 ? 0 : 20 }}
+        transition={{ duration: 0.8, delay: 0.5 }}
+        className="mt-12 max-w-md mx-auto relative z-10"
+      >
         <p className="text-gray-500 mb-8 text-lg">
-          Gələcəyin IT Bacarıqları Buradan Başlayır
+          Müasir texnologiyaları öyrənin və karyeranızı bizimlə qurun.
         </p>
         <div className="flex items-center justify-center gap-4">
-          <button className="bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors">
+          <Link to="/proqramlar" className="bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors">
             Proqramlar
-          </button>
-          <button className="px-6 py-3 rounded-full font-medium border border-gray-200 hover:border-gray-300 transition-colors">
+          </Link>
+          <Link to="/telimciler" className="px-6 py-3 rounded-full font-medium border border-gray-200 hover:border-gray-300 transition-colors bg-white">
             Təlimçilər
-          </button>
+          </Link>
         </div>
-      </FadeIn>
+      </motion.div>
     </section>
   );
 };
 
-const Showcase = ({ onOpenModal }: { onOpenModal: () => void }) => {
+const Showcase = ({ onOpenModal, isScrolled }: { onOpenModal: () => void, isScrolled?: boolean }) => {
   return (
     <section className="py-24 px-6 max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center relative z-10">
       <div>
@@ -307,9 +360,9 @@ const Showcase = ({ onOpenModal }: { onOpenModal: () => void }) => {
             Stack Academy-də AI, Kibertəhlükəsizlik, Data Analitika və Dizayn sahələrində müasir və praktik təhsil proqramları.
           </p>
           <div className="flex items-center gap-4">
-            <button className="bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors">
+            <Link to="/proqramlar" className="bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors">
               Proqramlara Bax
-            </button>
+            </Link>
             <button 
               onClick={onOpenModal}
               className="px-6 py-3 rounded-full font-medium border border-gray-200 hover:border-gray-300 transition-colors"
@@ -319,8 +372,54 @@ const Showcase = ({ onOpenModal }: { onOpenModal: () => void }) => {
           </div>
         </FadeIn>
       </div>
-      <div className="relative h-[500px] hidden md:block">
-        {/* The hero cards will drop into this space on scroll */}
+      <div className="relative h-[500px] hidden md:flex justify-center items-center">
+          {isScrolled && HERO_IMAGES.map((img, i) => (
+            <motion.div
+              key={img.id}
+              layoutId={img.id}
+              initial={false}
+              animate={{ opacity: 1, x: img.showcase.x, y: img.showcase.y, rotate: img.showcase.r, scale: 1 }}
+              transition={{ 
+                type: "spring", 
+                damping: 25, 
+                stiffness: 80
+              }}
+              className="absolute origin-center shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden border-4 border-white bg-gray-100 w-48 h-48 md:w-64 md:h-64"
+              style={{ zIndex: img.z }}
+            >
+              <img src={img.src} alt="Art" className="w-full h-full object-cover" />
+            </motion.div>
+          ))}
+
+          {isScrolled && (
+            <>
+              <motion.div
+                layoutId="bubble1"
+                initial={false}
+                animate={{ opacity: 1, scale: 1, x: -120, y: -120 }}
+                transition={{ 
+                  type: "spring", 
+                  bounce: 0.5
+                }}
+                className="absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white px-4 py-2 rounded-2xl rounded-bl-sm font-medium text-sm shadow-xl"
+              >
+                @kibertəhlükəsizlik
+              </motion.div>
+              
+              <motion.div
+                layoutId="bubble2"
+                initial={false}
+                animate={{ opacity: 1, scale: 1, x: 120, y: 120 }}
+                transition={{ 
+                  type: "spring", 
+                  bounce: 0.5
+                }}
+                className="absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-white px-4 py-2 rounded-2xl rounded-br-sm font-medium text-sm shadow-xl"
+              >
+                @proqramlaşdırma
+              </motion.div>
+            </>
+          )}
       </div>
     </section>
   );
@@ -406,70 +505,105 @@ const Trusted = () => (
   </section>
 );
 
-const Statement = () => {
+const STATEMENT_IMAGES = [
+  { id: 'stmt0', src: IMAGES[3], z: 60, stack: { x: 0, y: 0, r: 0 } },
+  { id: 'stmt1', src: IMAGES[4], z: 50, stack: { x: 10, y: -10, r: 4 } },
+  { id: 'stmt2', src: IMAGES[5], z: 40, stack: { x: 20, y: -20, r: 8 } },
+  { id: 'stmt3', src: IMAGES[6], z: 30, stack: { x: 30, y: -30, r: 12 } },
+  { id: 'stmt4', src: IMAGES[7], z: 20, stack: { x: 40, y: -40, r: 16 } },
+  { id: 'stmt5', src: IMAGES[0], z: 10, stack: { x: 50, y: -50, r: 20 } },
+];
+
+const Statement = ({ isScrolled }: { isScrolled?: boolean }) => {
   const { scrollYProgress } = useScroll();
   const scale = useTransform(scrollYProgress, [0.4, 0.6], [0.8, 1]);
   const opacity = useTransform(scrollYProgress, [0.4, 0.6], [0.3, 1]);
 
   return (
-    <section className="py-32 px-6 overflow-hidden relative min-h-[80vh] flex items-center">
-      <motion.div style={{ scale, opacity }} className="max-w-6xl mx-auto relative z-10 text-center">
-        <h2 className="text-4xl md:text-7xl font-medium leading-[1.1] tracking-tight text-gray-900">
+    <section className="py-32 px-6 relative min-h-[80vh] flex flex-col items-center justify-center">
+      <div className="max-w-6xl mx-auto relative z-10 text-center flex items-center justify-center min-h-[60vh]">
+        <motion.h2 style={{ scale, opacity }} className="text-4xl md:text-7xl font-medium leading-[1.1] tracking-tight text-gray-900 relative z-0">
           Texnologiya sahəsində karyera qurmaq istəyən hər kəs üçün Stack Academy müasir tədris proqramları, real layihələr və təcrübəli müəllimlərlə inkişaf imkanı yaradır.
-        </h2>
-      </motion.div>
-      
-      {/* Floating background elements */}
-      <motion.div 
-        animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }} 
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-20 left-20 w-48 h-64 rounded-2xl overflow-hidden shadow-2xl opacity-80 hidden md:block"
-      >
-        <img src={IMAGES[0]} className="w-full h-full object-cover" alt="" />
-      </motion.div>
-      <motion.div 
-        animate={{ y: [0, 30, 0], rotate: [0, -5, 0] }} 
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-20 right-20 w-56 h-72 rounded-2xl overflow-hidden shadow-2xl opacity-80 hidden md:block"
-      >
-        <img src={IMAGES[2]} className="w-full h-full object-cover" alt="" />
-      </motion.div>
+        </motion.h2>
+
+        <div className="absolute inset-0 flex justify-center items-center z-20 pointer-events-none">
+            {!isScrolled && STATEMENT_IMAGES.map((img, i) => (
+              <motion.div
+                key={img.id}
+                layoutId={img.id}
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, x: img.stack.x, y: img.stack.y, rotate: img.stack.r }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ 
+                  type: "spring", 
+                  damping: 25, 
+                  stiffness: 80
+                }}
+                className="absolute origin-bottom pointer-events-auto"
+                style={{ zIndex: img.z }}
+              >
+                <div className="w-48 h-64 md:w-56 md:h-72 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] overflow-hidden border-4 border-white bg-gray-100">
+                  <img src={img.src} alt="Art" className="w-full h-full object-cover" />
+                </div>
+              </motion.div>
+            ))}
+        </div>
+      </div>
     </section>
   );
 };
 
-const Vision = () => (
-  <section className="py-24 px-6 max-w-7xl mx-auto grid md:grid-cols-2 gap-16">
+const Vision = ({ isScrolled, visionRef }: { isScrolled?: boolean, visionRef?: React.RefObject<HTMLElement | null> }) => (
+  <section ref={visionRef} className="py-24 px-6 max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center min-h-screen">
     <div>
       <FadeIn>
         <h2 className="text-5xl md:text-6xl font-medium tracking-tight leading-tight mb-6">
           Stack Academy Məzunları
         </h2>
         <p className="text-gray-500 mb-8 text-lg max-w-md">
-          Təcrübəli müəllimlər və real layihələr vasitəsilə texnologiya sahəsində peşəkar bacarıqlar qazanan məzunlarımız.
+          Hər bir sətir kod bir hekayə danışır. Stack Academy tələbələrə öz fərdi səyahətlərini layihələri vasitəsilə nümayiş etdirməyə imkan verir.
         </p>
-        <button className="px-6 py-3 rounded-full font-medium border border-gray-200 hover:border-gray-300 transition-colors mb-16">
-          Məzunlar
-        </button>
-        <div className="flex -space-x-4 mb-8">
-          {[IMAGES[0], IMAGES[1], IMAGES[2], IMAGES[3], IMAGES[4]].map((img, i) => (
-            <img key={i} src={img} className="w-12 h-12 rounded-full border-2 border-white object-cover" alt={`Alumni ${i}`} />
-          ))}
-          <div className="w-12 h-12 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-sm font-medium text-gray-600">
-            +500
-          </div>
+        <Link to="/mezunlar" className="inline-block px-6 py-3 rounded-full font-medium border border-gray-200 hover:border-gray-300 transition-colors mb-16">
+          Ətraflı oxu
+        </Link>
+        
+        {/* Icons */}
+        <div className="flex flex-wrap gap-4 max-w-xs">
+          <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center"><PenTool className="w-5 h-5" /></div>
+          <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center"><Aperture className="w-5 h-5" /></div>
+          <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center"><Command className="w-5 h-5" /></div>
+          <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center"><Layers className="w-5 h-5" /></div>
+          <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center"><Edit2 className="w-5 h-5" /></div>
+          <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center"><Feather className="w-5 h-5" /></div>
         </div>
       </FadeIn>
     </div>
-    <div>
-      <FadeIn delay={0.2}>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="h-64 rounded-2xl overflow-hidden"><img src={IMAGES[3]} className="w-full h-full object-cover" alt=""/></div>
-          <div className="h-64 rounded-2xl overflow-hidden"><img src={IMAGES[4]} className="w-full h-full object-cover" alt=""/></div>
-          <div className="h-64 rounded-2xl overflow-hidden"><img src={IMAGES[5]} className="w-full h-full object-cover" alt=""/></div>
-          <div className="h-64 rounded-2xl overflow-hidden"><img src={IMAGES[6]} className="w-full h-full object-cover" alt=""/></div>
+    
+    <div className="relative w-full">
+      <div className="bg-white rounded-3xl shadow-xl border border-gray-100">
+        {/* Grid */}
+        <div className="p-6 bg-gray-50/50 min-h-[400px] rounded-3xl">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {isScrolled && STATEMENT_IMAGES.map((img, i) => (
+                <motion.div
+                  key={img.id}
+                  layoutId={img.id}
+                  initial={false}
+                  animate={{ opacity: 1, scale: 1, x: 0, y: 0, rotate: 0 }}
+                  transition={{ 
+                    type: "spring", 
+                    damping: 25, 
+                    stiffness: 80
+                  }}
+                  className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-sm bg-white"
+                  style={{ zIndex: img.z }}
+                >
+                  <img src={img.src} alt="Art" className="w-full h-full object-cover" />
+                </motion.div>
+              ))}
+          </div>
         </div>
-      </FadeIn>
+      </div>
     </div>
   </section>
 );
@@ -514,40 +648,80 @@ const Story = () => (
 );
 
 const Trainers = () => {
+  // Top row variations (size and vertical offset)
+  const topRowVariations = [
+    { size: 'w-24 h-24 md:w-32 md:h-32', y: '-translate-y-8' },
+    { size: 'w-32 h-32 md:w-40 md:h-40', y: 'translate-y-12' },
+    { size: 'w-28 h-28 md:w-36 md:h-36', y: '-translate-y-16' },
+    { size: 'w-20 h-20 md:w-28 md:h-28', y: 'translate-y-4' },
+    { size: 'w-36 h-36 md:w-48 md:h-48', y: '-translate-y-10' },
+    { size: 'w-24 h-24 md:w-32 md:h-32', y: 'translate-y-16' },
+    { size: 'w-32 h-32 md:w-40 md:h-40', y: '-translate-y-6' },
+    { size: 'w-28 h-28 md:w-36 md:h-36', y: 'translate-y-8' },
+  ];
+
+  // Bottom row variations
+  const bottomRowVariations = [
+    { size: 'w-28 h-28 md:w-36 md:h-36', y: 'translate-y-8' },
+    { size: 'w-36 h-36 md:w-48 md:h-48', y: '-translate-y-12' },
+    { size: 'w-24 h-24 md:w-32 md:h-32', y: 'translate-y-16' },
+    { size: 'w-32 h-32 md:w-40 md:h-40', y: '-translate-y-6' },
+    { size: 'w-20 h-20 md:w-28 md:h-28', y: 'translate-y-10' },
+    { size: 'w-28 h-28 md:w-36 md:h-36', y: '-translate-y-16' },
+    { size: 'w-24 h-24 md:w-32 md:h-32', y: 'translate-y-4' },
+    { size: 'w-36 h-36 md:w-48 md:h-48', y: '-translate-y-8' },
+  ];
+
+  const repeatedTeachers = [...mockTeachers, ...mockTeachers, ...mockTeachers, ...mockTeachers];
+
   return (
-    <section className="py-32 px-6 overflow-hidden relative bg-white">
-      <div className="max-w-7xl mx-auto text-center mb-16 relative z-10">
-        <FadeIn>
-          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <div className="w-4 h-4 bg-black rounded-sm rotate-45"></div>
+    <section className="py-24 overflow-hidden relative bg-white flex flex-col items-center justify-center min-h-screen">
+      
+      {/* Top Row - Sliding Left */}
+      <div className="w-full relative flex flex-col gap-8 mb-8">
+        <div className="flex overflow-hidden group py-16">
+          <div className="flex gap-8 md:gap-12 items-center whitespace-nowrap animate-marquee-left group-hover:[animation-play-state:paused]">
+            {repeatedTeachers.map((teacher, i) => {
+              const variation = topRowVariations[i % topRowVariations.length];
+              return (
+                <Link key={i} to="/telimciler" state={{ teacherIndex: i % mockTeachers.length }} 
+                  className={`block ${variation.size} ${variation.y} rounded-[2rem] overflow-hidden flex-shrink-0 transition-transform hover:scale-110 shadow-sm`}>
+                  <img src={teacher.profilePhoto} className="w-full h-full object-cover" alt={teacher.fullName} />
+                </Link>
+              );
+            })}
           </div>
-          <h2 className="text-5xl md:text-7xl font-medium tracking-tight mb-4">Təlimçilər</h2>
-          <p className="text-gray-500 text-lg max-w-xl mx-auto">
+        </div>
+      </div>
+
+      {/* Center Text Area */}
+      <div className="max-w-4xl mx-auto text-center relative z-10 px-6 my-4">
+        <FadeIn>
+          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-200 shadow-sm">
+            <Users className="w-4 h-4 text-gray-800" />
+          </div>
+          <h2 className="text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight mb-6 text-gray-900">
+            Təlimçilər
+          </h2>
+          <p className="text-gray-900 text-lg md:text-xl max-w-2xl mx-auto font-medium">
             Təcrübəli müəllimlərimizlə real layihələr üzərində öyrənin və bacarıqlarınızı inkişaf etdirin.
           </p>
         </FadeIn>
       </div>
 
-      <div className="relative flex flex-col gap-8">
-        {/* Top Row - Sliding Left */}
-        <div className="flex overflow-hidden group">
-          <div className="flex gap-6 items-center whitespace-nowrap animate-marquee-left group-hover:[animation-play-state:paused]">
-            {[...mockTeachers, ...mockTeachers].map((teacher, i) => (
-              <Link key={i} to="/telimciler" state={{ teacherIndex: i % mockTeachers.length }} className="block w-48 h-48 md:w-64 md:h-64 rounded-[2rem] overflow-hidden flex-shrink-0 transition-transform hover:scale-105">
-                <img src={teacher.profilePhoto} className="w-full h-full object-cover" alt={teacher.fullName} />
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Bottom Row - Sliding Right */}
-        <div className="flex overflow-hidden group">
-          <div className="flex gap-6 items-center whitespace-nowrap animate-marquee-right group-hover:[animation-play-state:paused]">
-            {[...mockTeachers, ...mockTeachers].reverse().map((teacher, i) => (
-              <Link key={i} to="/telimciler" state={{ teacherIndex: (mockTeachers.length - 1 - (i % mockTeachers.length)) }} className="block w-48 h-48 md:w-64 md:h-64 rounded-[2rem] overflow-hidden flex-shrink-0 transition-transform hover:scale-105">
-                <img src={teacher.profilePhoto} className="w-full h-full object-cover" alt={teacher.fullName} />
-              </Link>
-            ))}
+      {/* Bottom Row - Sliding Right */}
+      <div className="w-full relative flex flex-col gap-8 mt-8">
+        <div className="flex overflow-hidden group py-16">
+          <div className="flex gap-8 md:gap-12 items-center whitespace-nowrap animate-marquee-right group-hover:[animation-play-state:paused]">
+            {[...repeatedTeachers].reverse().map((teacher, i) => {
+              const variation = bottomRowVariations[i % bottomRowVariations.length];
+              return (
+                <Link key={i} to="/telimciler" state={{ teacherIndex: (mockTeachers.length - 1 - (i % mockTeachers.length)) }} 
+                  className={`block ${variation.size} ${variation.y} rounded-[2rem] overflow-hidden flex-shrink-0 transition-transform hover:scale-110 shadow-sm`}>
+                  <img src={teacher.profilePhoto} className="w-full h-full object-cover" alt={teacher.fullName} />
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -606,18 +780,18 @@ const Footer = ({ onOpenModal }: { onOpenModal: () => void }) => (
               Gələcəyin IT mütəxəssislərini yetişdirən, müasir tədris metodikası və real layihələr əsasında qurulmuş innovativ təhsil mərkəzi.
             </p>
             <div className="flex items-center gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-colors">
+              <Link to="/" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-colors">
                 <Linkedin className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-400 hover:text-white transition-colors">
+              </Link>
+              <Link to="/" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-400 hover:text-white transition-colors">
                 <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-pink-600 hover:text-white transition-colors">
+              </Link>
+              <Link to="/" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-pink-600 hover:text-white transition-colors">
                 <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-900 hover:text-white transition-colors">
+              </Link>
+              <Link to="/" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-900 hover:text-white transition-colors">
                 <Github className="w-5 h-5" />
-              </a>
+              </Link>
             </div>
           </div>
           
@@ -663,8 +837,8 @@ const Footer = ({ onOpenModal }: { onOpenModal: () => void }) => (
             © {new Date().getFullYear()} Stack Academy. Bütün hüquqlar qorunur.
           </p>
           <div className="flex gap-6 text-sm">
-            <a href="#" className="text-gray-400 hover:text-gray-900 transition-colors">Məxfilik Siyasəti</a>
-            <a href="#" className="text-gray-400 hover:text-gray-900 transition-colors">İstifadə Şərtləri</a>
+            <Link to="/" className="text-gray-400 hover:text-gray-900 transition-colors">Məxfilik Siyasəti</Link>
+            <Link to="/" className="text-gray-400 hover:text-gray-900 transition-colors">İstifadə Şərtləri</Link>
           </div>
         </div>
       </div>
@@ -673,14 +847,30 @@ const Footer = ({ onOpenModal }: { onOpenModal: () => void }) => (
 );
 
 const Home = ({ onOpenModal }: { onOpenModal: () => void }) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const { scrollY } = useScroll();
+  
+  const visionRef = useRef<HTMLElement>(null);
+  const isStatementScrolled = useInView(visionRef, { margin: "-30% 0px -30% 0px" });
+
+  useEffect(() => {
+    return scrollY.on("change", (latest) => {
+      setIsScrolled(prev => {
+        if (latest > 250 && !prev) return true;
+        if (latest <= 250 && prev) return false;
+        return prev;
+      });
+    });
+  }, [scrollY]);
+
   return (
     <main>
-      <Hero />
-      <Showcase onOpenModal={onOpenModal} />
+      <Hero isScrolled={isScrolled} />
+      <Showcase onOpenModal={onOpenModal} isScrolled={isScrolled} />
       <Gateway />
       <Trusted />
-      <Statement />
-      <Vision />
+      <Statement isScrolled={isStatementScrolled} />
+      <Vision visionRef={visionRef} isScrolled={isStatementScrolled} />
       <Story />
       <Trainers />
     </main>
